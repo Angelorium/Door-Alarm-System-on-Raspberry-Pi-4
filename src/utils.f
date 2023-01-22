@@ -17,7 +17,7 @@ FE200000 CONSTANT PERI_BASE    \ Base addresso of peripherals
 
 \ Create bit mask to safely modify GPIO registers value
 : MASK ( fsel_number value -- bit_mask)  
-    SWAP 10 mod 3 * lshift
+    SWAP 10 MOD 3 * LSHIFT
 ; 
 
 \ Returns the new_value setting to 0 the specified bit in mask
@@ -30,7 +30,7 @@ FE200000 CONSTANT PERI_BASE    \ Base addresso of peripherals
     111 MASK 
 ;
  
-\ Set GPIO register to the specified value
+\ Set GPFSEL register to the specified value
 : SET_GPFSEL ( fsel_number value -- )   
     OVER                                  \ ( fsel_number value fsel_number ) 
     BIC_MASK                              \ ( fsel_number value bic_mask ) 
@@ -46,4 +46,18 @@ FE200000 CONSTANT PERI_BASE    \ Base addresso of peripherals
     SWAP                                  \ ( new_value fsel_number )
     FSEL>ADDRESS                          \ ( new_value fsel_address )
     !      
+;
+
+\ Set GPIO register 
+: SET_GPSET ( gpio_pin -- )
+    dup 32 < IF 1 SWAP LSHIFT 1C PERI_BASE + !                    \ gpio_pin < 32
+    ELSE DUP 31 > IF 1 SWAP 32 MOD LSHIFT 20 PERI_BASE + !        \ gpio_pin > 31
+    THEN THEN 
+;
+
+\ Clear GPIO register 
+: SET_GPCLR ( gpio_pin -- )
+    dup 32 < IF 1 SWAP LSHIFT 28 PERI_BASE + !                    \ gpio_pin < 32
+    ELSE DUP 31 > IF 1 SWAP 2C MOD LSHIFT 20 PERI_BASE + !        \ gpio_pin > 31
+    THEN THEN 
 ;
