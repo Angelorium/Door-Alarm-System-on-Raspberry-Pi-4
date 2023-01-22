@@ -48,16 +48,25 @@ FE200000 CONSTANT PERI_BASE    \ Base addresso of peripherals
     !      
 ;
 
+\ Return the mask used to set o clear GPIO register
+: SET_CLR_MASK ( gpio_pin -- mask )
+    DUP 20 < IF 1 SWAP LSHIFT                     \ gpio_pin < 32
+    ELSE DUP 1F > IF 1 SWAP 20 MOD LSHIFT         \ gpio_pin > 31
+    THEN THEN 
+;
+
 \ Set GPIO register 
 : SET_HIGHT ( gpio_pin -- )
-    DUP 20 < IF 1 SWAP LSHIFT 1C PERI_BASE + !                    \ gpio_pin < 32
-    ELSE DUP 1F > IF 1 SWAP 20 MOD LSHIFT 20 PERI_BASE + !        \ gpio_pin > 31
+    DUP SET_CLR_MASK SWAP
+    DUP 20 < IF DROP 1C PERI_BASE + !             \ gpio_pin < 32
+    ELSE DUP 1F > IF DROP 20 PERI_BASE + !        \ gpio_pin > 31
     THEN THEN 
 ;
 
 \ Clear GPIO register 
 : SET_LOW ( gpio_pin -- )
-    dup 20 < IF 1 SWAP LSHIFT 28 PERI_BASE + !                    \ gpio_pin < 32
-    ELSE DUP 1F > IF 1 SWAP 20 MOD LSHIFT 2C PERI_BASE + !        \ gpio_pin > 31
+    DUP SET_CLR_MASK SWAP
+    DUP 20 < IF DROP 28 PERI_BASE + !             \ gpio_pin < 32
+    ELSE DUP 1F > IF DROP 2C PERI_BASE + !        \ gpio_pin > 31
     THEN THEN 
 ;
