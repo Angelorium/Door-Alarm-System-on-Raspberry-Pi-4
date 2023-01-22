@@ -10,7 +10,7 @@ FE200000 CONSTANT PERI_BASE    \ Base address of peripherals
 ;
 
 \ Returns the GPFSEL value of the specified fsel number
-: FSEL>VALUE ( fsel_number -- gpfsel_register_address )
+: FSEL>VALUE ( fsel_number -- gpfsel_register_value )
     FSEL>ADDRESS @
 ;
 
