@@ -1,6 +1,6 @@
 HEX
 
-FE200000 CONSTANT PERI_BASE    \ Base addresso of peripherals
+FE200000 CONSTANT PERI_BASE    \ Base address of peripherals
 1 CONSTANT OUTPUT   
 0 CONSTANT INPUT 
 
@@ -10,7 +10,7 @@ FE200000 CONSTANT PERI_BASE    \ Base addresso of peripherals
 ;
 
 \ Returns the GPFSEL value of the specified fsel number
-: FSEL>VALUE ( fsel_number -- gpfsel_resoger_address )
+: FSEL>VALUE ( fsel_number -- gpfsel_register_address )
     FSEL>ADDRESS @
 ;
 
