@@ -15,7 +15,7 @@ FE200000 CONSTANT PERI_BASE    \ Base addresso of peripherals
 ;
 
 
-\ Create bit mask to safely modify GPIO registers value
+\ Creates bit mask to safely modify GPIO registers value
 : MASK ( fsel_number value -- bit_mask)  
     SWAP A MOD 3 * LSHIFT
 ; 
@@ -25,12 +25,12 @@ FE200000 CONSTANT PERI_BASE    \ Base addresso of peripherals
     INVERT AND
 ;
 
-\ Create bit mask to use bic (bit clear)
+\ Creates bit mask to use bic (bit clear)
 : BIC_MASK ( fsel_number -- bic_mask )
     7 MASK 
 ;
  
-\ Set GPFSEL register to the specified value
+\ Sets GPFSEL register to the specified value
 : SET_GPFSEL ( fsel_number value -- )   
     OVER                                  \ ( fsel_number value fsel_number ) 
     BIC_MASK                              \ ( fsel_number value bic_mask ) 
@@ -48,14 +48,14 @@ FE200000 CONSTANT PERI_BASE    \ Base addresso of peripherals
     !      
 ;
 
-\ Return the mask used to set o clear GPIO register
+\ Returns the mask used to set or clear GPIO register
 : SET_CLR_MASK ( gpio_pin -- mask )
     DUP 20 < IF 1 SWAP LSHIFT                     \ gpio_pin < 32
     ELSE DUP 1F > IF 1 SWAP 20 MOD LSHIFT         \ gpio_pin > 31
     THEN THEN 
 ;
 
-\ Set GPIO register 
+\ Sets GPIO register 
 : SET_HIGHT ( gpio_pin -- )
     DUP SET_CLR_MASK SWAP
     DUP 20 < IF DROP 1C PERI_BASE + !             \ gpio_pin < 32
@@ -63,7 +63,7 @@ FE200000 CONSTANT PERI_BASE    \ Base addresso of peripherals
     THEN THEN 
 ;
 
-\ Clear GPIO register 
+\ Clears GPIO register 
 : SET_LOW ( gpio_pin -- )
     DUP SET_CLR_MASK SWAP
     DUP 20 < IF DROP 28 PERI_BASE + !             \ gpio_pin < 32
