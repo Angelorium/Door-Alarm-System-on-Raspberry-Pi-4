@@ -14,7 +14,6 @@ FE200000 CONSTANT PERI_BASE    \ Base address of peripherals
     FSEL>ADDRESS @
 ;
 
-
 \ Creates bit mask to safely modify GPIO registers value
 : MASK ( fsel_number value -- bit_mask)  
     SWAP A MOD 3 * LSHIFT
