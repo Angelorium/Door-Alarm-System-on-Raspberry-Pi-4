@@ -1,6 +1,6 @@
 HEX
 
-E804000 CONSTANT BSC1                   \ Base address of BSC1 register
+7E804000 CONSTANT BSC1                   \ Base address of BSC1 register
 BSC1 CONSTANT CONTROL                   \ Control register address
 4 BSC1 + CONSTANT STATUS                \ Status register address
 8 BSC1 + CONSTANT DATA_LENGTH           \ Data Length register address
