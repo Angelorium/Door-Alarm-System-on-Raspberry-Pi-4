@@ -4,6 +4,11 @@ FE200000 CONSTANT PERI_BASE    \ Base address of peripherals
 1 CONSTANT OUTPUT   
 0 CONSTANT INPUT 
 
+\ Creates a busy loop
+: DELAY ( delay_value -- )
+    BEGIN 1 - DUP 0 = UNTIL DROP 
+;
+
 \ Returns the GPFSEL address of the specified fsel number
 : FSEL>ADDRESS ( fsel_number -- gpfsel_register_address ) 
     A / 4 * PERI_BASE + 
