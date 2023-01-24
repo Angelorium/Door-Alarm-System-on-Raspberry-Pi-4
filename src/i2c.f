@@ -54,7 +54,7 @@ BSC1 CONSTANT CONTROL                   \ Control register address
 \ Starts a new transfer setting 
 \ bit 0 (Read Transfer) to 0
 \ bit 7 (Start Transfer) to 1 
-\ bit 15 (I2C enable)to 1 
+\ bit 15 (I2C enable) to 1 
 : START_TRANSFER
     CONTROL @ 1 BIC CONTROL !        \ clear bit 0
     8080 CONTROL SET_REGISTER        \ set bit 7 and bit 15
