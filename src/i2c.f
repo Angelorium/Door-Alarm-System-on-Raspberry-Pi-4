@@ -58,3 +58,6 @@ BSC1 CONSTANT CONTROL                   \ Control register address
     STORE_FIFO
     START_TRANSFER
 ;
+
+
+\ to Initialize 0c 08 2c 28
