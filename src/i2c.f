@@ -7,16 +7,6 @@ BSC1 CONSTANT CONTROL                   \ Control register address
 0C BSC1 + CONSTANT SLAVE_ADDRESS        \ Slave Address register address
 10 BSC1 + CONSTANT DATA_FIFO            \ Data FIFO register address
 
-\ Safely set to 1 register bits
-: SET_REGISTER ( value register_address -- )
-    DUP                \ value register_address register_address
-    @                  \ value register_address register_value
-    ROT                \ register_address register_value value
-    OR                 \ register_address new_register_value
-    SWAP               \ new_register_value register_address
-    !
-;
-
 \ Sets GPIO2 and GPIO3 to ALT0
 : CONFIG_I2C_GPIO
     2 4 SET_GPFSEL          \ Sets FSEL2 to 100
