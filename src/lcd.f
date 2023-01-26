@@ -2,18 +2,17 @@ HEX
 
 02 CONSTANT RETURN_HOME         \ Set cursor to original position
 01 CONSTANT CLEAR               \ Clear lcd 
-\ ASCII code of reversed worLd and length 
 
 : DOOR 
-    20 52 4F 4F 44 4
+    20 52 4F 4F 44 5  \ ASCII code of reversed worLd and length 
 ;
 
 : CLOSED 
-    20 44 45 53 4F 4C 43 6
+    20 44 45 53 4F 4C 43 7
 ;
 
 : OPEN
-    20 4E 45 50 4F 4
+    20 4E 45 50 4F 5
 ;
 
 \ Sends a nibble to lcd 
