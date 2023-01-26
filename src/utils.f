@@ -33,6 +33,21 @@ FE200000 CONSTANT PERI_BASE    \ Base address of peripherals
 : BIC_MASK ( fsel_number -- bic_mask )
     7 MASK 
 ;
+
+\ Gets only the first 4 MSB from a byte
+: MSB ( byte -- MSB)
+    4 RSHIFT 
+;
+
+\ Gets only the first 4 LSB from a byte
+: LSB ( byte -- LSB)
+    0F AND 
+;
+
+\ Copies the top of the return stack wihout affecting it
+: R@
+    R> R> TUCK >R >R
+;
  
 \ Sets GPFSEL register to the specified value
 : SET_GPFSEL ( fsel_number value -- )   
