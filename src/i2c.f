@@ -18,17 +18,17 @@ BSC1 CONSTANT CONTROL                   \ Control register address
 \ bit 8 (Ack Error) to 1,
 \ bit 9 (Clock Stretch Timeout) to 1
 : RESET_STATUS 
-    STATUS @ 302 BIC 302 OR STATUS !
+    STATUS @ 302 OR STATUS !
 ;
 
 \ Resets FIFO setting bit 4 (FIFO Clear) to 1
 : RESET_FIFO
-    CONTROL @ 10 BIC 10 OR CONTROL !
+    CONTROL @ 10 OR CONTROL !
 ;
 
 \ Sets the number of bytes of data to transmit or receive to 1
 : SET_DATA_LENGTH
-    DATA_LENGTH @ FFFF BIC 1 OR DATA_LENGTH !
+    DATA_LENGTH @ 1 OR DATA_LENGTH !
 ;
 
 \ Sets the slave address 
@@ -46,7 +46,7 @@ BSC1 CONSTANT CONTROL                   \ Control register address
 \ bit 7 (Start Transfer) to 1 
 \ bit 15 (I2C enable) to 1 
 : START_TRANSFER
-    CONTROL @ 8081 BIC 8080 OR CONTROL !
+    CONTROL @ 1 BIC 8080 OR CONTROL !
 ;
 
 \ Sends 8 bit using i2c
