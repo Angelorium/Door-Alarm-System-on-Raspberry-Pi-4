@@ -2,9 +2,18 @@ HEX
 
 02 CONSTANT RETURN_HOME         \ Set cursor to original position
 01 CONSTANT CLEAR               \ Clear lcd 
+\ ASCII code of reversed worLd and length 
 
-: OPEN_DOOR
-    79 80 69 78 32 68 79 79 82 9
+: DOOR 
+    20 52 4F 4F 44 4
+;
+
+: CLOSED 
+    20 44 45 53 4F 4C 43 6
+;
+
+: OPEN
+    20 4E 45 50 4F 4
 ;
 
 \ Sends a nibble to lcd 
@@ -54,5 +63,6 @@ HEX
 
 : SEND_WORD
     >R 
-    BEGIN R> 1 - >R SEND_DATA UNTIL R@ 0 >
+    BEGIN R> 1 - >R SEND_DATA R@ 0 = UNTIL 
+    R> DROP
 ;
