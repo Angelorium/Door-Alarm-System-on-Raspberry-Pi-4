@@ -60,4 +60,18 @@ BSC1 CONSTANT CONTROL                   \ Control register address
 ;
 
 
-\ to Initialize 0c 08 2c 28
+\ to Initialize 0C SEND 1000 DELAY 08 SEND 1000 DELAY 2C SEND 1000 DELAY 28
+\ send 02 
+\ 4 MSB with C
+\ 4 MSB with 8
+\ 4 LSB with C
+\ 4 LBS with 8
+
+\ Divides byte in MSB and LSB 
+\ send MSB with C and with 8
+\ send LSB with C and with 8
+
+
+\ Divides byte in MSB and LSB 
+\ send MSB with D and with 8
+\ send LSB with D and with 8
