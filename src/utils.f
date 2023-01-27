@@ -90,7 +90,7 @@ FE200000 CONSTANT PERI_BASE    \ Base address of peripherals
     THEN THEN 
 ;
 
-\ Returns the vale of the specified pin
+\ Returns the value of the specified pin
 : READ ( gpio_pin -- value )
     DUP 20 < IF DROP 34 PERI_BASE + @ SWAP RSHIFT 00000001 AND 
     ELSE DUP 1F > IF DROP 38 PERI_BASE + @ SWAP RSHIFT 00000001 AND 
