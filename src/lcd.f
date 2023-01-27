@@ -3,15 +3,15 @@ HEX
 02 CONSTANT RETURN_HOME         \ Set cursor to original position
 01 CONSTANT CLEAR               \ Clear lcd 
 
-: DOOR 
-    20 52 4F 4F 44 5  \ ASCII code of reversed worLd and length 
+: DOOR ( -- reversed_ascii_code length)
+    20 52 4F 4F 44 5 
 ;
 
-: CLOSED 
+: CLOSED ( -- reversed_ascii_code length)
     20 44 45 53 4F 4C 43 7
 ;
 
-: OPEN
+: OPEN ( -- reversed_ascii_code length)
     20 4E 45 50 4F 5
 ;
 
@@ -55,13 +55,13 @@ HEX
 ;
 
 \ Initializes lcd 
-: INITIALIZE_LCD
+: INITIALIZE_LCD ( -- )
     CONFIG_I2C_GPIO
     RETURN_HOME SEND_COMMAND
 ;
 
 \ Send a word to lcd
-: SEND_WORD
+: SEND_WORD ( reversed_ascii_code length --)
     >R 
     BEGIN R> 1 - >R SEND_DATA R@ 0 = UNTIL 
     R> DROP

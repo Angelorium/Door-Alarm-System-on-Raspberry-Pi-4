@@ -8,7 +8,7 @@ BSC1 CONSTANT CONTROL                   \ Control register address
 10 BSC1 + CONSTANT DATA_FIFO            \ Data FIFO register address
 
 \ Sets GPIO2 and GPIO3 to ALT0
-: CONFIG_I2C_GPIO
+: CONFIG_I2C_GPIO ( -- )
     2 4 SET_GPFSEL          \ Sets FSEL2 to 100
     3 4 SET_GPFSEL          \ Sets FSEL3 to 100 
 ;
@@ -17,22 +17,22 @@ BSC1 CONSTANT CONTROL                   \ Control register address
 \ bit 1 (Transfer Done) to 1,
 \ bit 8 (Ack Error) to 1,
 \ bit 9 (Clock Stretch Timeout) to 1
-: RESET_STATUS 
+: RESET_STATUS ( -- )
     STATUS @ 302 OR STATUS !
 ;
 
 \ Resets FIFO setting bit 4 (FIFO Clear) to 1
-: RESET_FIFO
+: RESET_FIFO ( -- )
     CONTROL @ 10 OR CONTROL !
 ;
 
 \ Sets the number of bytes of data to transmit or receive to 1
-: SET_DATA_LENGTH
+: SET_DATA_LENGTH ( -- )
     DATA_LENGTH @ 1 OR DATA_LENGTH !
 ;
 
 \ Sets the slave address 
-: SET_SLAVE 
+: SET_SLAVE ( -- )
     SLAVE_ADDRESS @ 7F BIC 27 OR SLAVE_ADDRESS !
 ;
 
@@ -45,12 +45,12 @@ BSC1 CONSTANT CONTROL                   \ Control register address
 \ bit 0 (Read Transfer) to 0
 \ bit 7 (Start Transfer) to 1 
 \ bit 15 (I2C enable) to 1 
-: START_TRANSFER
+: START_TRANSFER ( -- )
     CONTROL @ 1 BIC 8080 OR CONTROL !
 ;
 
 \ Sends 8 bit using i2c
-: SEND
+: SEND ( data -- )
     RESET_STATUS 
     RESET_FIFO
     SET_DATA_LENGTH

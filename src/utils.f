@@ -45,7 +45,7 @@ FE200000 CONSTANT PERI_BASE    \ Base address of peripherals
 ;
 
 \ Copies the top of the return stack wihout affecting it
-: R@
+: R@ ( -- TORS )
     R> R> TUCK >R >R
 ;
  
@@ -87,5 +87,12 @@ FE200000 CONSTANT PERI_BASE    \ Base address of peripherals
     DUP SET_CLR_MASK SWAP
     DUP 20 < IF DROP 28 PERI_BASE + !             \ gpio_pin < 32
     ELSE DUP 1F > IF DROP 2C PERI_BASE + !        \ gpio_pin > 31
+    THEN THEN 
+;
+
+\ Returns the vale of the specified pin
+: READ ( gpio_pin -- value )
+    DUP 20 < IF DROP 34 PERI_BASE + @ SWAP RSHIFT 00000001 AND 
+    ELSE DUP 1F > IF DROP 38 PERI_BASE + @ SWAP RSHIFT 00000001 AND 
     THEN THEN 
 ;

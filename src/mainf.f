@@ -1,6 +1,6 @@
 HEX
 
-: RUN 
+: RUN ( -- )
     INITIALIZE_LCD
     INITIALIZE_PERIPHERALS
 ;
