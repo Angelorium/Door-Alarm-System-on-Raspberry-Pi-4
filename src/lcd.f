@@ -60,6 +60,7 @@ HEX
     RETURN_HOME SEND_COMMAND
 ;
 
+\ Send a word to lcd
 : SEND_WORD
     >R 
     BEGIN R> 1 - >R SEND_DATA R@ 0 = UNTIL 

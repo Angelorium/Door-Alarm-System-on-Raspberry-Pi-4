@@ -75,7 +75,7 @@ FE200000 CONSTANT PERI_BASE    \ Base address of peripherals
 ;
 
 \ Sets GPIO register 
-: SET_HIGHT ( gpio_pin -- )
+: ON ( gpio_pin -- )
     DUP SET_CLR_MASK SWAP
     DUP 20 < IF DROP 1C PERI_BASE + !             \ gpio_pin < 32
     ELSE DUP 1F > IF DROP 20 PERI_BASE + !        \ gpio_pin > 31
@@ -83,7 +83,7 @@ FE200000 CONSTANT PERI_BASE    \ Base address of peripherals
 ;
 
 \ Clears GPIO register 
-: SET_LOW ( gpio_pin -- )
+: OFF ( gpio_pin -- )
     DUP SET_CLR_MASK SWAP
     DUP 20 < IF DROP 28 PERI_BASE + !             \ gpio_pin < 32
     ELSE DUP 1F > IF DROP 2C PERI_BASE + !        \ gpio_pin > 31
