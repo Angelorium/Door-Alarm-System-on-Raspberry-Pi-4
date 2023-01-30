@@ -25,3 +25,8 @@ HEX
 : HALL_SENSOR_STATUS  ( -- hall_sensor_status)
     HALL_SENSOR READ
 ;
+
+\ Returns the status of the buzzer (1 or 0)
+: BUZZER_STATUS ( -- buzzer_status )
+    BUZZER READ
+;

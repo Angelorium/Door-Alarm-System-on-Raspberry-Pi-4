@@ -1,5 +1,6 @@
 HEX
 
+\ Executes the program
 : RUN ( -- )
     INITIALIZE_LCD
     CLEAR SEND_COMMAND
@@ -7,7 +8,7 @@ HEX
     GREEN_LED ON 
     
     BEGIN 
-        HALL_SENSOR_STATUS 1 = IF 
+        HALL_SENSOR_STATUS 1 = BUZZER_STATUS 0 = AND IF 
             GREEN_LED OFF 
             RED_LED ON 
             BUZZER ON
@@ -20,5 +21,6 @@ HEX
             BUZZER OFF
             CLEAR SEND_COMMAND
             DOOR CLOSED SEND_WORD SEND_WORD 
-     UNTIL
+        THEN
+    0 UNTIL
 ;
