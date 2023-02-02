@@ -1,6 +1,6 @@
-\documentclass{article}
-\usepackage[a4paper, total={6.5in, 9in}]{geometry}
-\renewcommand{\contentsname}{Contents}
+\documentclass[]{article}
+\usepackage[a4paper]{geometry}
+\renewcommand{\contentsname}{Table Of Contents}
 \usepackage{amssymb}
 \usepackage{hyperref}
 \usepackage{fancyhdr}
@@ -9,52 +9,67 @@
 \pagestyle{fancy}
 \fancyhead{}
 \fancyfoot{}
-\fancyhead[L]{\slshape\MakeUppercase{Door Alarm System on bare metal Raspberry Pi 4}}
+\fancyhead[L]{\slshape\MakeUppercase{Door Alarm System on Raspberry Pi 4}}
 \fancyhead[R]{\slshape Angelo Barbera}
 \fancyfoot[C]{\thepage}
-\title{\huge Door Alarm System on bare metal Raspberry Pi 4}
+\title{\huge Door Alarm System on Raspberry Pi 4}
 \author{Angelo Barbera}
 \date{2023}
+
 \begin{document}
+
 \begin{titlepage}
 	\centering
-	{\scshape\LARGE Unveristà degli studi di Palermo \par}
+	{\scshape\LARGE Univeristà degli Studi di Palermo \par}
 	\vspace{0.6cm}
 	{\scshape\Large Embedded Systems \par}
 	\vspace{1.8cm}
-	{\huge\bfseries Door Alarm System on bare metal Raspberry Pi 4 \par}
+	{\huge\bfseries Door Alarm System on Raspberry Pi 4 \par}
 	\vspace{2cm}
 	\vfill
 	{\large Angelo Barbera 2023 \par}
 \end{titlepage}
-\newpage
+
 \pagenumbering{roman}
+
 \tableofcontents
-\newpage
-\clearpage\pagenumbering{arabic}
+
+\clearpage
+\pagenumbering{arabic}
 
 
 \section{Introduction}
+The project is a Door Alarm System. The System is able to monitor the open or closed status of a door using a hall sensor
+to detect the presence of a magnet; if the latter is far from the sensor, it is emitted a sound alert with a buzzer. 
+Using two LEDs and a LCD display 16x2 the status of the door is shown. In addition there is a button that can be used to 
+turn off the alarm when the door is closed.
+\\ 
+In the following sections is described in detail the hardware and the software used to implement the project.
 
 \section{Hardware}
 
-\includegraphics{breadboard.png}
-
-\subsection{Target}
+\subsection{Raspberry PI 4}
 The chosen target for this project is the Raspberry Pi 4 Model B, a single board computer developed by 
-the Raspberry Pi Foundation and realeased in 2019.
-\\
-The tech specs include:
+the Raspberry Pi Foundation and realeased in 2019. The tech specs include:
 \begin{itemize} 
     \item Broadcom BCM2711, Quad core Cortex-A72 (ARM v8) 64-bit SoC @ 1.5Ghz
-    \item 1GB, 2GB, 4GB, or 8GB LPDDR4 SDRAM
+    \item 1GB, 2GB, 4GB, or 8GB LPDDR4-3200 SDRAM (depending on model)
     \item 2.4 GHz and 5.0 Ghz 802.11ac wireless
     \item Gigabit Ethernet
-    \item Bluetooth 5.0
-    \item Two USB 3.0 and two USB 2.0 ports
-    \item 40 pin GPIO header
-    \item Two micro-HDMI ports up to 4kp60
+    \item Bluetooth 5.0, BLE
+    \item 2 USB 3.0 ports, 2 USB 2.0 ports
+    \item Raspberry Pi standard 40 pin GPIO header
+    \item 2 micro-HDMI ports (up to 4kp60 supported)
+    \item 2-lane MIPI DSI display port
+    \item 2-lane MIPI CSI camera port
+    \item 4-pole stereo audio and composite video port
+    \item H.265 (4kp60 decode), H.264 (1080p60 decode, 1080p30 encode)
+    \item OpenGL ES 3.1, Vulkan 1.0
     \item Micro-SD card slot for loading operating system and data storage
+    \item 5V DC via USB-C connector (minimum 3A)
+    \item 5V DC via GPIO header (minimum 3A)
+    \item Power over Ethernet (PoE) enabled (requires separate PoE HAT)
+    \item Operating temperature 0 - 50 °C ambient
 \end{itemize}
 
 \subsection{KY-003 Hall sensor}
