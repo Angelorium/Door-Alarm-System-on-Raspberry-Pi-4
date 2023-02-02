@@ -49,6 +49,10 @@ In the following sections is described in detail the hardware and the software u
 \section{Hardware}
 
 \subsection{Raspberry PI 4}
+
+\begin{center}
+    \includegraphics[scale=0.6]{raspberry_pi_4}
+\end{center}
 The chosen target for this project is the Raspberry Pi 4 Model B, a single board computer developed by 
 the Raspberry Pi Foundation and realeased in 2019. The tech specs include:
 \begin{itemize} 
@@ -72,34 +76,11 @@ the Raspberry Pi Foundation and realeased in 2019. The tech specs include:
     \item Operating temperature 0 - 50 °C ambient
 \end{itemize}
 
-\subsection{KY-003 Hall sensor}
-The KY-003 hall sensor allow to detect a magnetic field. When the magnetic field at the Hall sensor exceeds
-the operate point threshold (BOP) the output of the device switches low. When the magnetic field is reduced
-to below the realease point threshold (BRP) the device output switches high.
-BOP and BRP may vary respectively from 1 mT to 33 mT and from 5 mT to 35 mT at operating 
-temperature T = 25° C depending on the sensor model.
-This sensor is used to trigger
-the alarm when the  magnetic field detected by the sensor is below the realease point threshold. 
-
-\subsection{LCD 1602}
-The LCD 1602 is a liquid crystal display that can display 16x02 characters at the same time. 
-This module provides a 16 pin interface and a I2C interface. 
-It is used to show the door status (open or closed).
-
-\subsection{KY-012 Buzzer}
-The KY-012 Buzzer is an active piezoelectric buzzer, it generates a sound of approximately 2.5kHz when 
-input signal (S) is high. The Buzzer is activated when the Hall sensor detect a magnetic field below the BOP
-
-\subsection{LEDs}
-When the Hall sensor detects a megnetic field that exceeds the BOP the green LED is on and the red LED is off.
-When the Hall sensor detects a megnetic field below the BOP the green LED is off and the red LED is on.
-
-\subsection{Button}
-The button is used to turn off the buzzer.
-
-\subsection{Resistors}
-
 \subsection{FT232-AZ USB to TTL serial UART adapter}
+
+\begin{center}
+    \includegraphics[scale=0.4]{uart_adapter}
+\end{center}
 The FT232-AZ USB to TTL serial UART adapter is used to connect the PC used during the development of the project
 to the target in order to send and receive data between the PC and the Raspberry Pi 4. 
 The PC is connected through a USB port, the target is connected through GPIO pins according to the 
@@ -108,7 +89,7 @@ following table.
 \begin{center}
     \begin{tabular}{ |c|c|c| } 
         \hline
-        GPIO \# & Function & UART adapter  \\
+        GPIO & Function & UART adapter  \\
         \hline
         14 (Tx) & Output & Rx \\ 
         15 (Rx) & Input & Tx \\ 
@@ -117,22 +98,80 @@ following table.
     \end{tabular}
 \end{center}
 
+\subsection{KY-003 Hall sensor}
+
+\begin{center}
+    \includegraphics[scale=0.2]{ky-003}
+\end{center}
+The KY-003 hall sensor allows to detect a magnetic field. When the magnetic field at the Hall sensor exceeds
+the operate point threshold (BOP) the output of the device switches low. When the magnetic field is reduced
+to below the realease point threshold (BRP) the device output switches high.
+BOP and BRP may vary respectively from 1 mT to 33 mT and from 5 mT to 35 mT at operating 
+temperature T = 25° C depending on the sensor model.
+This sensor is used to trigger the alarm when the magnet is far from the sensor.
+
+\subsection{KY-012 Buzzer}
+
+\begin{center}
+    \includegraphics[scale=0.4]{ky-012}
+\end{center}
+The KY-012 Buzzer is an active piezoelectric buzzer, it generates a sound of approximately 2.5kHz when 
+input signal (S) is high. The Buzzer is activated when the Hall sensor does not detect the magnet.
+
+\subsection{LEDs}
+
+\begin{center}
+    \includegraphics[scale=0.4]{leds}
+\end{center}
+The LEDs are used to show the alarm status. When the Hall sensor does not detects the magnet the green LED turns off 
+and the red LED turns on. When the Hall sensor detect the magnet and the push button is pressed, the green LED turns on
+and the red LED turns off.
+
+\subsection{Push Button}
+
+\begin{center}
+    \includegraphics[scale=0.5]{push_button}
+\end{center}
+The push button can be used to turn off the alarm when the hall sensor detects the magnet.
+
+\subsection{Resistors}
+
+\begin{center}
+    \includegraphics{resistors}
+\end{center}
+The resistors are connected in series to the LEDs to limit the current flowing through the LED and to ensure that the supplied 
+voltage does not exceeds the maximum voltage of the LED. The 100 $ \Omega $ resistor is connected to the red LED, the 68 $ \Omega $ 
+resistor is connected to the green LED.
+
+\subsection{LCD 1602}
+The LCD 1602 is a liquid crystal display that can display 16x02 characters at the same time. 
+This module provides a 16 pin interface and a I2C interface. 
+It is used to show the door status (open or closed).
+
+\subsection{PCF8574AT 8-bit I/O expander for I2C bus}
+
 \subsection{GPIO wiring diagram}
+
+\begin{center}
+    \includegraphics[scale=0.9]{breadboard}
+\end{center}
+
+\newpage
 The following table is the GPIO wiring diagram.
 
 \begin{center}
     \begin{tabular}{ |c|c|c| } 
         \hline
-        GPIO \# & Function & Connection \\
+        GPIO & Function & Connection \\
         \hline
-        2 & SDA & LCD \\
-        3 & SCL & LCD \\
-        6 & Output & Buzzer \\
-        16 & Output & Green LED \\
+        2 & SDA & SDA (I/O expander) \\
+        3 & SCL & SCL (I/O expander) \\
+        6 & Output & S (Buzzer) \\
+        16 & Output & Anode (Green LED) \\
         25 & Input & Button \\
-        26 & Output & Red LED \\
-        27 & Input & Hall sensor \\
-        5V & Power & Breadboard \\
+        26 & Output & Anode (Red LED) \\
+        27 & Input & S (Hall sensor) \\
+        5V & Power & VCC (I/O expander) \\
         3V3 & Power & Breadboard \\
         Ground & Ground & Breadboard \\
         \hline
@@ -140,6 +179,18 @@ The following table is the GPIO wiring diagram.
 \end{center}
 
 \section{Software}
+
+\section{References}
+
+\begin{itemize}
+    \item raspberrypi.com/products/raspberry-pi-4-model-b/specifications
+    \item cdn.shopify.com/s/files/1/1509/1638/files/FT232-AZ\_Adapter\_Datenblatt\_AZ-Delivery-
+    \\\_Vertriebs\_GmbH.pdf
+    \item cdn.shopify.com/s/files/1/1509/1638/files/Hall\_Sensor\_Modul\_Digital\_Datenblatt.pdf
+    \item cdn.shopify.com/s/files/1/1509/1638/files/KY-012\_Buzzer\_Modul\_Aktiv\_Datenblatt-
+    \\\_AZ-Delivery\_Vertriebs\_GmbH.pdf
+\end{itemize}
+
 
 
 \end{document}
