@@ -144,9 +144,36 @@ voltage does not exceeds the maximum voltage of the LED. The 100 $ \Omega $ resi
 resistor is connected to the green LED.
 
 \subsection{LCD 1602}
-The LCD 1602 is a liquid crystal display that can display 16x02 characters at the same time. 
-This module provides a 16 pin interface and a I2C interface. 
-It is used to show the door status (open or closed).
+
+\begin{center}
+    \includegraphics[scale=0.2]{lcd}
+\end{center}
+The LCD 1602 is an industrial character LCD that can display 16x02 or 32 characters at the same time. 
+The LCD 1602 is controlled through a parrallel interface with 8-bit / 4-bit data bus and 3 control signals. 
+The interface signals reach the two controller chips that drive the LCD panel as shown in the following block diagram.
+
+\begin{center}
+    \includegraphics[scale=0.4]{lcd_block_diagram}
+\end{center}
+The following table describes the pin assignment
+
+\begin{center}
+    \includegraphics[scale=0.4]{lcd_pin_assignment}
+\end{center}
+The LCD module is controlled through instructions to set display format, data length, scrolling modality, internal RAM address, 
+to perform data transfer from/to internal RAM and to access status flag. The following table describes the instructions.
+
+\begin{center}
+    \includegraphics[scale=0.7]{lcd_instruction}
+\end{center}
+In order to write to the controller chips we need to set properly the control bits: the R/W bit must be set to 0 for writing,
+the RS bit must be set to 1 for data input and to 0 for instruction input, the E bit must be set to 1 before the start of the data transmission
+and must be set to 0 before the end of the data transmission as shown in the following figure
+
+\begin{center}
+    \includegraphics[scale=0.5]{lcd_writing}
+\end{center}
+
 
 \subsection{PCF8574AT 8-bit I/O expander for I2C bus}
 
@@ -178,6 +205,12 @@ The following table is the GPIO wiring diagram.
     \end{tabular}
 \end{center}
 
+\section{Environment}
+
+\subsection{pijForthos}
+
+\subsection{Minicom, Picocom}
+
 \section{Software}
 
 \section{References}
@@ -189,6 +222,8 @@ The following table is the GPIO wiring diagram.
     \item cdn.shopify.com/s/files/1/1509/1638/files/Hall\_Sensor\_Modul\_Digital\_Datenblatt.pdf
     \item cdn.shopify.com/s/files/1/1509/1638/files/KY-012\_Buzzer\_Modul\_Aktiv\_Datenblatt-
     \\\_AZ-Delivery\_Vertriebs\_GmbH.pdf
+    \item wiki.52pi.com/index.php?title=Z-0234
+    \item msb-co.ir/wp-content/uploads/2021/10/eone-1602a1.pdf
 \end{itemize}
 
 
