@@ -176,6 +176,56 @@ and must be set to 0 before the end of the data transmission as shown in the fol
 
 
 \subsection{PCF8574AT 8-bit I/O expander for I2C bus}
+The PCF8574AT provides general-purpose remote I/O expansione via the two-wire bidirectional $ I^2C $ bus. It is used to connect the Raspberry Pi to the LCD 1602
+using the $ I^2 C $ bus instead of the parrallel interface.
+
+\subsection{The I2C bus}
+The $ I^2C $ bus is a synchronous, multi-master, multi-slave, packet switched, single-ended, serial computer bus invented by Philips Semiconductor.
+It is used to connect lower speed peripheral integrated circuits to processors and microcontrollers in short distance. 
+Each device connected to the bus is software addressable by a unique address to differentiate between other devices that are on the same bus. 
+Two wires carry data (SDA) and clock signal (SCL). \\
+Open drain connection allows for bidirectional communication: to transmit low the logic activate the pull-down FET (so the line is pulled low), 
+to transmit high the logic realease the bus turning off the pull-down FET (so the pull-up resistor pulls up the line). \\
+The procedure for a master to send data to a slave is the following: 
+\begin{itemize}
+    \item Master-transmitter sends a START condition and addresses the slave-receiver 
+    \item Master-transmitter sends data to slave-receiver 
+    \item Master-transmitter terminates the transfer with a STOP condition 
+\end{itemize}
+The START condition is defined by a high-to-low transition on the SDA line while the SCL is high. The STOP condition is defined by a low-to-high transition 
+on the SDA line while the SCL is high.
+
+\begin{center}
+    \includegraphics[scale=0.5]{start_stop_conditions}
+\end{center}
+One data bit is transferred during each clock pulse of the SCL, the data on the SDA line must remain stable duriong the high period of the clock pulse
+as changes in the data line at this time will be interpreted as control signals (START or STOP). Any number of data bytes can be transferred between
+ther START and STOP conditions. Data is transferred Most Significant Bit first.
+
+\begin{center}
+    \includegraphics[scale=0.5]{bit_transfer}
+\end{center}
+Each byte of data is followed by one ACK (acknowledge) bit from the receiver to signal thath the byte was successfully received. Before the receiver can send an ACK 
+de transmitter must realease the SDA line. To send an ACK bit the receiver pulls down the SDA after receiving the last bit so the line is stable low during the high 
+fase of the ACK clock period. When SDA line remains high after receiving the last bit, this is interpreted as a NACK (not acknowledge)
+
+\begin{center}
+    \includegraphics[scale=0.5]{byte_transmission}
+\end{center}
+
+The procedure to write on the bus is the following:
+\begin{itemize}
+    \item The master sends a START condition with the slave's address followed by the R/W bit set to 0
+    \item The slave sends the acknowledge bit 
+    \item The master sends the register address of the register it whishes to write to 
+    \item The slave acknowledges the register address
+    \item The master starts sending the register data to the slave 
+    \item The master terminates the transmission with a STOP condition
+\end{itemize}
+
+\begin{center}
+    \includegraphics[scale=0.4]{write_procedure}
+\end{center}
 
 \subsection{GPIO wiring diagram}
 
@@ -224,6 +274,8 @@ The following table is the GPIO wiring diagram.
     \\\_AZ-Delivery\_Vertriebs\_GmbH.pdf
     \item wiki.52pi.com/index.php?title=Z-0234
     \item msb-co.ir/wp-content/uploads/2021/10/eone-1602a1.pdf
+    \item nxp.com/docs/en/data-sheet/PCF8574\_PCF8574A.pdf
+    \item ti.com/lit/an/slva704/slva704.pdf
 \end{itemize}
 
 
