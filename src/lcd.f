@@ -1,6 +1,6 @@
 HEX
 
-02 CONSTANT RETURN_HOME         \ Set cursor to original position
+02 CONSTANT FUNCTION_SET        \ Sets 4 bit mode
 01 CONSTANT CLEAR               \ Clear lcd 
 
 : DOOR ( -- reversed_ascii_code length)
@@ -57,7 +57,7 @@ HEX
 \ Initializes lcd 
 : INITIALIZE_LCD ( -- )
     CONFIG_I2C_GPIO
-    RETURN_HOME SEND_COMMAND
+    FUNCTION_SET SEND_COMMAND
 ;
 
 \ Send a word to lcd

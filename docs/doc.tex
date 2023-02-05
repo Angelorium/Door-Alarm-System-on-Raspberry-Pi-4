@@ -164,7 +164,7 @@ The LCD module is controlled through instructions to set display format, data le
 to perform data transfer from/to internal RAM and to access status flag. The following table describes the instructions.
 
 \begin{center}
-    \includegraphics[scale=0.7]{lcd_instruction}
+    \includegraphics[scale=0.6]{lcd_instruction}
 \end{center}
 In order to write to the controller chips we need to set properly the control bits: the R/W bit must be set to 0 for writing,
 the RS bit must be set to 1 for data input and to 0 for instruction input, the E bit must be set to 1 before the start of the data transmission
@@ -176,10 +176,13 @@ and must be set to 0 before the end of the data transmission as shown in the fol
 
 
 \subsection{PCF8574AT 8-bit I/O expander for I2C bus}
+\begin{center}
+    \includegraphics[scale=0.2]{io_expander}
+\end{center}
 The PCF8574AT provides general-purpose remote I/O expansione via the two-wire bidirectional $ I^2C $ bus. It is used to connect the Raspberry Pi to the LCD 1602
 using the $ I^2 C $ bus instead of the parrallel interface.
 
-\subsection{The I2C bus}
+\subsubsection{The I2C bus}
 The $ I^2C $ bus is a synchronous, multi-master, multi-slave, packet switched, single-ended, serial computer bus invented by Philips Semiconductor.
 It is used to connect lower speed peripheral integrated circuits to processors and microcontrollers in short distance. 
 Each device connected to the bus is software addressable by a unique address to differentiate between other devices that are on the same bus. 
@@ -226,6 +229,68 @@ The procedure to write on the bus is the following:
 \begin{center}
     \includegraphics[scale=0.4]{write_procedure}
 \end{center}
+
+\subsubsection{LCD connection}
+The following table describes the connections between the LCD 1602 and the PCF8574AT 
+
+\begin{center}
+    \begin{tabular}{|c|c|} 
+        \hline
+        PCF8574AT & LCD 1602 \\
+        \hline
+        P0 & RS \\
+        P1 & RW \\
+        P2 & E \\
+        P3 & Backlight \\
+        P4 & D4 \\
+        P5 & D5 \\
+        P6 & D6 \\
+        P7 & D7 \\
+        \hline
+    \end{tabular}
+\end{center}
+
+In order to set the LCD 1602 to 4 bit mode it is necessary to send the following command 
+
+\begin{center}
+    \begin{tabular}{|c|c|c|c|c|c|c|c|c|} 
+        \hline
+        & D7 & D6 & D5 & D4 & Backlight & E & R/W & RS \\
+        \hline
+        2C & 0 & 0 & 1 & 0 & 1 & 1 & 0 & 0 \\
+        28 & 0 & 0 & 1 & 0 & 1 & 0 & 0 & 0 \\
+        \hline
+    \end{tabular}
+\end{center}
+
+Now is possible to send a command signal or a data signal according to the following tables
+
+\begin{center}
+    \begin{tabular}{|c|c|c|c|c|c|c|c|c|} 
+        \hline
+        & D7 & D6 & D5 & D4 & Backlight & E & R/W & RS \\
+        \hline
+        MSB\_CMD C & B7 & B6 & B5 & B4 & 1 & 1 & 0 & 0 \\
+        MSB\_CMD 8 & B7 & B6 & B5 & B4 & 1 & 0 & 0 & 0 \\
+        LSB\_CMD C & B3 & B2 & B1 & B0 & 1 & 1 & 0 & 0 \\
+        LSB\_CMD 8 & B3 & B2 & B1 & B0 & 1 & 0 & 0 & 0 \\
+        \hline
+    \end{tabular}
+\end{center}
+
+\begin{center}
+    \begin{tabular}{|c|c|c|c|c|c|c|c|c|} 
+        \hline
+        & D7 & D6 & D5 & D4 & Backlight & E & R/W & RS \\
+        \hline
+        MSB\_DATA D & B7 & B6 & B5 & B4 & 1 & 1 & 0 & 1 \\
+        MSB\_DATA 9 & B7 & B6 & B5 & B4 & 1 & 0 & 0 & 1 \\
+        LSB\_DATA D & B3 & B2 & B1 & B0 & 1 & 1 & 0 & 1 \\
+        LSB\_DATA 9 & B3 & B2 & B1 & B0 & 1 & 0 & 0 & 1 \\
+        \hline
+    \end{tabular}
+\end{center}
+
 
 \subsection{GPIO wiring diagram}
 
