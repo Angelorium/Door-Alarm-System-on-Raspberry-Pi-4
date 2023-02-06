@@ -5,6 +5,7 @@
 \usepackage{hyperref}
 \usepackage{fancyhdr}
 \usepackage{graphicx}
+\usepackage{menukeys}
 \graphicspath{{./images/}}
 \pagestyle{fancy}
 \fancyhead{}
@@ -323,10 +324,38 @@ The following table is the GPIO wiring diagram.
 \section{Environment}
 
 \subsection{pijForthos}
+Forth is a procedural, stack-oriented programming lenguage and interactive environment designed by Charles H. "Chuck" Moore. Forth combines
+a compiler with an integrated command shell, where the user interacts via subroutine called words \\
+pijForthos is a bare-metal operating system for Raspberry Pi based on Jonesforth-ARM. Jonesforth-ARM is an ARM port of x86 JonesForth 
+by Richard W.M. Jones, a Forth interpreter developed for ARM. If you have pijFORTHos on a Micro SD card in the Raspberry Pi, you can connect
+it to development machine using the USB to TTL serial UART adapter. Using the programs described below you can have access to 
+the Forth console.
+
 
 \subsection{Minicom, Picocom}
+Minicom is a text-based terminal emulator program for Unix-lile operating systems, it is used to set up a remote serial console.
+Picocom is similar to Minicom and it was designed to serve as a simple, manual, modem configuration, testing and debugging tool. \\
+ASCII-XFR transfers files in ASCII mode and it is used to send the source file to the Raspberry Pi allowing to set a delay between each character and line sent. It is useful
+beacuse, since the UART connection is asynchronous, if the reciver is busy compiling or executing Forth words and the transmitter is sending data,
+it is possible to lose them.  \\
+The following command is used to set up the communication with the Raspberry Pi : \\
+\texttt{picocom --b 115200 /dev/ttyUSB0 --imap delbs -s "ascii-xfr -sv -l100 -c10"}
+
+\begin{itemize}
+    \item \texttt{--b 115200} defines the baud rate
+    \item \texttt{/dev/ttyUSB0} specifies the UART port
+    \item \texttt{--imap delbs} maps del to backspace
+    \item \texttt{-s "ascii-xfr -sv -l100 -c10"} specifies the external program that will be used to transmitting files
+    \item \texttt{-sv} specifies verbose mode 
+    \item \texttt{-l100} specifies the delay (100 milliseconds) after transmitting each line
+    \item \texttt{-c10} specifies the delay (10 milliseconds) after transmitting each character
+\end{itemize}
 
 \section{Software}
+
+\subsection{Environment setup}
+
+\subsection{Code structure}
 
 \section{References}
 
@@ -341,6 +370,12 @@ The following table is the GPIO wiring diagram.
     \item msb-co.ir/wp-content/uploads/2021/10/eone-1602a1.pdf
     \item nxp.com/docs/en/data-sheet/PCF8574\_PCF8574A.pdf
     \item ti.com/lit/an/slva704/slva704.pdf
+    \item github.com/organix/pijFORTHos
+    \item linux.die.net/man/1/minicom
+    \item linux.die.net/man/8/picocom
+    \item linux.die.net/man/1/ascii-xfr
+    \item manpages.ubuntu.com/manpages/trusty/man8/picocom.8.html
+    \item unix.com/man-page/redhat/1/ascii-xfr/
 \end{itemize}
 
 
