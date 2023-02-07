@@ -370,6 +370,367 @@ The \texttt{config.txt} file must be edited specifying the following settings:
 \end{itemize}
 
 \subsection{Code structure}
+The code is devided into the following files 
+
+\begin{itemize}
+    \item \texttt{se-ans.f} contains some definition for ANS compliance 
+    \item \texttt{utils.f} contains utility words
+    \item \texttt{i2c.f} contains the words used to set up i2c 
+    \item \texttt{lcd.f} contains the words used to control the lcd
+    \item \texttt{peripherals.f} contains the words used to manage the peripherals
+    \item \texttt{main.f} contains the words used to run the system 
+\end{itemize}
+The provious files must be sent to the Raspberry Pi using picocom in the specified order.
+
+\subsubsection{se-ans.f}
+\begin{verbatim}
+\ Sistemi Embedded 18/19
+\ Daniele Peri - Universita' degli Studi di Palermo
+\
+\ Some definitions for ANS compliance
+\
+\ v. 20181215
+
+: JF-HERE   HERE ;
+: JF-CREATE   CREATE ;
+: JF-FIND   FIND ;
+: JF-WORD   WORD ;
+
+: HERE   JF-HERE @ ;
+: ALLOT   HERE + JF-HERE ! ;
+
+: [']   ' LIT , ; IMMEDIATE
+: '   JF-WORD JF-FIND >CFA ; 
+
+: CELL+  4 + ;
+
+: ALIGNED   3 + 3 INVERT AND ;
+: ALIGN JF-HERE @ ALIGNED JF-HERE ! ;
+
+: CREATE   JF-WORD JF-CREATE DOCREATE , ;
+: (DODOES-INT)  ALIGN JF-HERE @ LATEST @ >CFA ! DODOES> ['] LIT ,  
+  LATEST @ >DFA , ; 
+: (DODOES-COMP)  (DODOES-INT) ['] LIT , , ['] FIP! , ; 
+: DOES>COMP   ['] LIT , HERE 3 CELLS + , ['] (DODOES-COMP) , ['] EXIT , ;
+: DOES>INT   (DODOES-INT) LATEST @ HIDDEN ] ;
+: DOES>   STATE @ 0= IF DOES>INT ELSE DOES>COMP THEN ; IMMEDIATE
+\end{verbatim}
+
+\subsubsection{utils.f}
+
+\begin{verbatim}
+HEX
+
+FE200000 CONSTANT PERI_BASE    \ Base address of peripherals
+1 CONSTANT OUTPUT   
+0 CONSTANT INPUT 
+
+\ Creates a busy loop
+: DELAY ( delay_value -- )
+    BEGIN 1 - DUP 0 = UNTIL DROP 
+;
+
+\ Returns the GPFSEL address of the specified fsel number
+: FSEL>ADDRESS ( fsel_number -- gpfsel_register_address ) 
+    A / 4 * PERI_BASE + 
+;
+
+\ Returns the GPFSEL value of the specified fsel number
+: FSEL>VALUE ( fsel_number -- gpfsel_register_value )
+    FSEL>ADDRESS @
+;
+
+\ Creates bit mask to safely modify GPIO registers value
+: MASK ( fsel_number value -- bit_mask)  
+    SWAP A MOD 3 * LSHIFT
+; 
+
+\ Returns the new_value setting to 0 the specified bit in mask
+: BIC ( value mask - new_value)
+    INVERT AND
+;
+
+\ Creates bit mask to use bic (bit clear)
+: BIC_MASK ( fsel_number -- bic_mask )
+    7 MASK 
+;
+
+\ Gets only the first 4 MSB from a byte
+: MSB ( byte -- MSB)
+    4 RSHIFT 
+;
+
+\ Gets only the first 4 LSB from a byte
+: LSB ( byte -- LSB)
+    0F AND 
+;
+
+\ Copies the top of the return stack wihout affecting it
+: R@ ( -- TORS )
+    R> R> TUCK >R >R
+;
+ 
+\ Sets GPFSEL register to the specified value
+: SET_GPFSEL ( fsel_number value -- )   
+    OVER                         \ ( fsel_number value fsel_number ) 
+    BIC_MASK                     \ ( fsel_number value bic_mask ) 
+    ROT ROT SWAP DUP ROT         \ ( bic_mask fsel_number fsel_number value )
+    MASK                         \ ( bic_mask fsel_number bit_mask ) 
+    SWAP                         \ ( bic_mask bit_mask fsel_number ) 
+    DUP                          \ ( bic_mask bit_mask fsel_number fsel_number )
+    FSEL>VALUE                   \ ( bic_mask bit_mask fsel_number original_value )
+    >R ROT R> SWAP               \ ( bit_mask fsel_number original_value bic_mask )
+    BIC                          \ ( bit_mask fsel_number bic_value ) 
+    ROT                          \ ( fsel_number bic_value bit_mask )
+    OR                           \ ( fsel_number new_value )
+    SWAP                         \ ( new_value fsel_number )
+    FSEL>ADDRESS                 \ ( new_value fsel_address )
+    !      
+;
+
+\ Returns the mask used to set or clear GPIO register
+: SET_CLR_MASK ( gpio_pin -- mask )
+    DUP 20 < IF 1 SWAP LSHIFT                     \ gpio_pin < 32
+    ELSE DUP 1F > IF 1 SWAP 20 MOD LSHIFT         \ gpio_pin > 31
+    THEN THEN 
+;
+
+\ Sets GPIO register 
+: ON ( gpio_pin -- )
+    DUP SET_CLR_MASK SWAP
+    DUP 20 < IF DROP 1C PERI_BASE + !             \ gpio_pin < 32
+    ELSE DUP 1F > IF DROP 20 PERI_BASE + !        \ gpio_pin > 31
+    THEN THEN 
+;
+
+\ Clears GPIO register 
+: OFF ( gpio_pin -- )
+    DUP SET_CLR_MASK SWAP
+    DUP 20 < IF DROP 28 PERI_BASE + !             \ gpio_pin < 32
+    ELSE DUP 1F > IF DROP 2C PERI_BASE + !        \ gpio_pin > 31
+    THEN THEN 
+;
+
+\ Returns the value of the specified pin
+: READ ( gpio_pin -- value )
+    DUP 20 < IF 34 PERI_BASE + @ SWAP RSHIFT 1 AND 
+    ELSE DUP 1F > IF 38 PERI_BASE + @ SWAP RSHIFT 1 AND 
+    THEN THEN 
+;
+\end{verbatim}
+
+\subsubsection{i2c.f}
+
+\begin{verbatim}
+HEX
+
+FE804000 CONSTANT BSC1                   \ Base address of BSC1 register
+BSC1 CONSTANT CONTROL                   \ Control register address
+4 BSC1 + CONSTANT STATUS                \ Status register address
+8 BSC1 + CONSTANT DATA_LENGTH           \ Data Length register address
+0C BSC1 + CONSTANT SLAVE_ADDRESS        \ Slave Address register address
+10 BSC1 + CONSTANT DATA_FIFO            \ Data FIFO register address
+
+\ Sets GPIO2 and GPIO3 to ALT0
+: CONFIG_I2C_GPIO ( -- )
+    2 4 SET_GPFSEL          \ Sets FSEL2 to 100
+    3 4 SET_GPFSEL          \ Sets FSEL3 to 100 
+;
+
+\ Resets the Status Register setting:
+\ bit 1 (Transfer Done) to 1,
+\ bit 8 (Ack Error) to 1,
+\ bit 9 (Clock Stretch Timeout) to 1
+: RESET_STATUS ( -- )
+    STATUS @ 302 OR STATUS !
+;
+
+\ Resets FIFO setting bit 4 (FIFO Clear) to 1
+: RESET_FIFO ( -- )
+    CONTROL @ 10 OR CONTROL !
+;
+
+\ Sets the number of bytes of data to transmit or receive to 1
+: SET_DATA_LENGTH ( -- )
+    DATA_LENGTH @ 1 OR DATA_LENGTH !
+;
+
+\ Sets the slave address 
+: SET_SLAVE ( -- )
+    SLAVE_ADDRESS @ 7F BIC 27 OR SLAVE_ADDRESS !
+;
+
+\ Stores data in Data FIFO register
+: STORE_FIFO ( data -- )
+    DATA_FIFO @ FF BIC OR DATA_FIFO !
+;
+
+\ Starts a new transfer setting 
+\ bit 0 (Read Transfer) to 0
+\ bit 7 (Start Transfer) to 1 
+\ bit 15 (I2C enable) to 1 
+: START_TRANSFER ( -- )
+    CONTROL @ 1 BIC 8080 OR CONTROL !
+;
+
+\ Sends 8 bit using i2c
+: SEND ( data -- )
+    RESET_STATUS 
+    RESET_FIFO
+    SET_DATA_LENGTH
+    SET_SLAVE
+    STORE_FIFO
+    START_TRANSFER
+;
+
+\end{verbatim}
+
+\subsubsection{lcd.f}
+
+\begin{verbatim}
+    HEX
+
+02 CONSTANT FUNCTION_SET        \ Sets 4 bit mode
+01 CONSTANT CLEAR               \ Clear lcd 
+
+: DOOR ( -- reversed_ascii_code length)
+    20 52 4F 4F 44 5 
+;
+
+: CLOSED ( -- reversed_ascii_code length)
+    20 44 45 53 4F 4C 43 7
+;
+
+: OPEN ( -- reversed_ascii_code length)
+    20 4E 45 50 4F 5
+;
+
+\ Sends a nibble to lcd 
+: SEND_NIBBLE ( LSB settings -- )
+    SWAP 4 LSHIFT OR
+    SEND
+    1000 DELAY
+;
+
+\ Sends command to lcd 
+\ It is necessary to send: D7, D6, D5, D4, 
+\ Backlight, Enable, Read (1)/Write (0), Register Select (1-data 0-instruction)
+\ C = 1100, 8 = 1000
+\ 4 MSB|C 
+\ 4 MSB|8
+\ 4 LSB|C
+\ 4 LBS|8
+: SEND_COMMAND ( command -- )
+    DUP MSB SWAP LSB SWAP DUP              \ ( LSB MSB MSB )
+    0C SEND_NIBBLE 
+    08 SEND_NIBBLE 
+    DUP 
+    0C SEND_NIBBLE
+    08 SEND_NIBBLE
+;
+
+\ Sends data to lcd 
+\ It is necessary to send: D7, D6, D5, D4, 
+\ Backlight, Enable, Read (1)/Write (0), Register Select (1-data 0-instruction)
+\ D = 1101, 9 = 1001
+\ 4 MSB|D
+\ 4 MSB|9
+\ 4 LSB|D
+\ 4 LBS|9
+: SEND_DATA ( data -- ) 
+    DUP MSB SWAP LSB SWAP DUP              \ ( LSB MSB MSB )
+    0D SEND_NIBBLE  
+    09 SEND_NIBBLE 
+    DUP 
+    0D SEND_NIBBLE
+    09 SEND_NIBBLE 
+;
+
+\ Initializes lcd 
+: INITIALIZE_LCD ( -- )
+    CONFIG_I2C_GPIO
+    FUNCTION_SET SEND_COMMAND
+;
+
+\ Send a word to lcd
+: SEND_WORD ( reversed_ascii_code length --)
+    >R 
+    BEGIN R> 1 - >R SEND_DATA R@ 0 = UNTIL 
+    R> DROP
+;
+
+\end{verbatim}
+
+\subsubsection{peripherals.f}
+
+\begin{verbatim}
+HEX
+
+1A CONSTANT RED_LED                 \ The red LED is connected to GPIO 26
+10 CONSTANT GREEN_LED               \ The green LED is connected to GPIO 16
+6 CONSTANT BUZZER                   \ The Buzzer is connected to GPIO 6
+19 CONSTANT BUTTON                  \ The Button is connected to GPIO 25
+1B CONSTANT HALL_SENSOR             \ The Hall sensor is connected to GPIO 27
+
+
+\ Initializes peripherals 
+: INITIALIZE_PERIPHERALS ( -- )
+    RED_LED OUTPUT SET_GPFSEL       \ Sets gpfsel 26 to output 
+    GREEN_LED OUTPUT SET_GPFSEL     \ Sets gpfsel 16 to output 
+    BUZZER OUTPUT SET_GPFSEL        \ Sets gpfsel 6 to output 
+    BUTTON INPUT SET_GPFSEL         \ Sets gpfsel 25 to input 
+    HALL_SENSOR INPUT SET_GPFSEL    \ Sets gpfsel 27 to input 
+;
+
+\ Returns the status of the button (1 or 0)
+: BUTTON_STATUS ( -- button_status)
+    BUTTON READ 
+;
+
+\ Returns the status of the hall sensor (1 or 0)
+: HALL_SENSOR_STATUS  ( -- hall_sensor_status)
+    HALL_SENSOR READ
+;
+
+\ Returns the status of the buzzer (1 or 0)
+: BUZZER_STATUS ( -- buzzer_status )
+    BUZZER READ
+;
+\end{verbatim}
+
+\subsubsection{main.f}
+
+\begin{verbatim}
+HEX
+
+\ Executes the program
+: RUN ( -- )
+    INITIALIZE_LCD
+    CLEAR SEND_COMMAND
+    INITIALIZE_PERIPHERALS
+    GREEN_LED ON 
+    
+    BEGIN 
+        HALL_SENSOR_STATUS 1 = BUZZER_STATUS 0 = AND IF 
+            GREEN_LED OFF 
+            RED_LED ON 
+            BUZZER ON
+            CLEAR SEND_COMMAND
+            DOOR OPEN SEND_WORD SEND_WORD
+        THEN
+        BUTTON_STATUS 1 = HALL_SENSOR_STATUS 0 = AND IF 
+            RED_LED OFF 
+            GREEN_LED ON 
+            BUZZER OFF
+            CLEAR SEND_COMMAND
+            DOOR CLOSED SEND_WORD SEND_WORD 
+        THEN
+    0 UNTIL
+;
+
+\end{verbatim}
+
+\newpage
 
 \section{References}
 

@@ -1,7 +1,7 @@
 HEX
 
-1A CONSTANT RED_LED                     \ the red LED is connected to GPIO 26
-10 CONSTANT GREEN_LED                   \ the green LED is connected to GPIO 16
+1A CONSTANT RED_LED                     \ The red LED is connected to GPIO 26
+10 CONSTANT GREEN_LED                   \ The green LED is connected to GPIO 16
 6 CONSTANT BUZZER                       \ The Buzzer is connected to GPIO 6
 19 CONSTANT BUTTON                      \ The Button is connected to GPIO 25
 1B CONSTANT HALL_SENSOR                 \ The Hall sensor is connected to GPIO 27
