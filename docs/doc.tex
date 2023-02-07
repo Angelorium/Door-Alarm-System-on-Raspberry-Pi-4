@@ -354,6 +354,20 @@ The following command is used to set up the communication with the Raspberry Pi 
 \section{Software}
 
 \subsection{Environment setup}
+To setup the environment it is necessary to format the micro SD card using FAT32 as file system. Then the following files must be coped in the micro SD card: 
+\begin{itemize}
+    \item \texttt{bootcode.bin} contains the bootloader code 
+    \item \texttt{config.txt} contains the configuration parameters
+    \item \texttt{start4.elf} contains the second-stage bootloader 
+    \item \texttt{fixup.dat} contains Video Core code and initialization data 
+    \item \texttt{bcm2711-rpi-4-b.dtb} describes the hadrware present in the Raspberry Pi
+    \item \texttt{kernel7.img} contains the pijFORTHos code   
+\end{itemize}
+The \texttt{config.txt} file must be edited specifying the following settings:
+\begin{itemize}
+    \item \texttt{dtparam=i2c\_arm=on} enables $ I^2C $
+    \item \texttt{enable\_uart=1} enables UART 
+\end{itemize}
 
 \subsection{Code structure}
 
