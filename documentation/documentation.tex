@@ -140,9 +140,10 @@ The push button can be used to turn off the alarm when the hall sensor detects t
 \begin{center}
     \includegraphics{resistors}
 \end{center}
-The resistors are connected in series to the LEDs to limit the current flowing through the LED and to ensure that the supplied 
+The 100 $ \Omega $ and 68 $ \Omega $ resistors are connected in series to the LEDs to limit the current flowing through the LED and to ensure that the supplied 
 voltage does not exceeds the maximum voltage of the LED. The 100 $ \Omega $ resistor is connected to the red LED, the 68 $ \Omega $ 
 resistor is connected to the green LED.
+The 10k $ \Omega $ resistor is a pull-down resistor, it is used to prevent an undefined state for GPIO 25 when the button is not pressed 
 
 \subsection{LCD 1602}
 
@@ -704,26 +705,29 @@ HEX
 HEX
 
 \ Executes the program
+HEX
+
+\ Executes the program
 : RUN ( -- )
     INITIALIZE_LCD
-    CLEAR SEND_COMMAND
-    INITIALIZE_PERIPHERALS
-    GREEN_LED ON 
+    CLEAR SEND_COMMAND          \ Sends clear command to LCD
+    INITIALIZE_PERIPHERALS      
+    GREEN_LED ON                \ Turns on the green LED
     
-    BEGIN 
-        HALL_SENSOR_STATUS 1 = BUZZER_STATUS 0 = AND IF 
-            GREEN_LED OFF 
+    BEGIN  \If the hall sensor does not detect the magnet and the alarm is off
+        HALL_SENSOR_STATUS 1 = BUZZER_STATUS 0 = AND IF   
+            GREEN_LED OFF       
             RED_LED ON 
             BUZZER ON
             CLEAR SEND_COMMAND
-            DOOR OPEN SEND_WORD SEND_WORD
-        THEN
-        BUTTON_STATUS 1 = HALL_SENSOR_STATUS 0 = AND IF 
-            RED_LED OFF 
+            DOOR OPEN SEND_WORD SEND_WORD    \ Sends words to LCD
+        THEN \If the hall sensor detects the magnet, the alarm is on, the button is pressed  
+        BUTTON_STATUS 1 = HALL_SENSOR_STATUS 0 = BUZZER_STATUS 1 = AND AND IF
+            RED_LED OFF             
             GREEN_LED ON 
             BUZZER OFF
             CLEAR SEND_COMMAND
-            DOOR CLOSED SEND_WORD SEND_WORD 
+            DOOR CLOSED SEND_WORD SEND_WORD    \ Sends words to LCD
         THEN
     0 UNTIL
 ;
