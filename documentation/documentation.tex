@@ -5,7 +5,6 @@
 \usepackage{hyperref}
 \usepackage{fancyhdr}
 \usepackage{graphicx}
-\usepackage{menukeys}
 \graphicspath{{./images/}}
 \pagestyle{fancy}
 \fancyhead{}
@@ -42,7 +41,7 @@
 \section{Introduction}
 The project is a Door Alarm System. The System is able to monitor the open or closed status of a door using a hall sensor
 to detect the presence of a magnet; if the latter is far from the sensor, it is emitted a sound alert with a buzzer. 
-Using two LEDs and a LCD display 16x2 the status of the door is shown. In addition there is a button that can be used to 
+Using two LEDs and a LCD 1602 the status of the door is shown. In addition there is a button that can be used to 
 turn off the alarm when the door is closed.
 \\ 
 In the following sections is described in detail the hardware and the software used to implement the project.
@@ -143,7 +142,7 @@ The push button can be used to turn off the alarm when the hall sensor detects t
 The 100 $ \Omega $ and 68 $ \Omega $ resistors are connected in series to the LEDs to limit the current flowing through the LED and to ensure that the supplied 
 voltage does not exceeds the maximum voltage of the LED. The 100 $ \Omega $ resistor is connected to the red LED, the 68 $ \Omega $ 
 resistor is connected to the green LED.
-The 10k $ \Omega $ resistor is a pull-down resistor, it is used to prevent an undefined state for GPIO 25 when the button is not pressed 
+The 10k $ \Omega $ resistor is a pull-down resistor, it is used to prevent an undefined state for GPIO 25 when the button is not pressed.
 
 \subsection{LCD 1602}
 
@@ -181,7 +180,7 @@ and must be set to 0 before the end of the data transmission as shown in the fol
 \begin{center}
     \includegraphics[scale=0.2]{io_expander}
 \end{center}
-The PCF8574AT provides general-purpose remote I/O expansione via the two-wire bidirectional $ I^2C $ bus. It is used to connect the Raspberry Pi to the LCD 1602
+The PCF8574AT provides general-purpose remote I/O expansion via the two-wire bidirectional $ I^2C $ bus. It is used to connect the Raspberry Pi to the LCD 1602
 using the $ I^2 C $ bus instead of the parrallel interface.
 
 \subsubsection{The I2C bus}
@@ -204,14 +203,14 @@ on the SDA line while the SCL is high.
     \includegraphics[scale=0.5]{start_stop_conditions}
 \end{center}
 One data bit is transferred during each clock pulse of the SCL, the data on the SDA line must remain stable duriong the high period of the clock pulse
-as changes in the data line at this time will be interpreted as control signals (START or STOP). Any number of data bytes can be transferred between
-ther START and STOP conditions. Data is transferred Most Significant Bit first.
+as changes in the data line at this time will be interpreted as control signals (START or STOP). Data is transferred Most Significant Bit first. 
+Any number of data bytes can be transferred between the START and STOP conditions.
 
 \begin{center}
     \includegraphics[scale=0.5]{bit_transfer}
 \end{center}
-Each byte of data is followed by one ACK (acknowledge) bit from the receiver to signal thath the byte was successfully received. Before the receiver can send an ACK 
-de transmitter must realease the SDA line. To send an ACK bit the receiver pulls down the SDA after receiving the last bit so the line is stable low during the high 
+Each byte of data is followed by one ACK (acknowledge) bit from the receiver to signal that the byte was successfully received. Before the receiver can send an ACK 
+the transmitter must realease the SDA line. To send an ACK bit the receiver pulls down the SDA after receiving the last bit so the line is stable low during the high 
 fase of the ACK clock period. When SDA line remains high after receiving the last bit, this is interpreted as a NACK (not acknowledge)
 
 \begin{center}
@@ -326,8 +325,8 @@ The following table is the GPIO wiring diagram.
 
 \subsection{pijForthos}
 Forth is a procedural, stack-oriented programming lenguage and interactive environment designed by Charles H. "Chuck" Moore. Forth combines
-a compiler with an integrated command shell, where the user interacts via subroutine called words \\
-pijForthos is a bare-metal operating system for Raspberry Pi based on Jonesforth-ARM. Jonesforth-ARM is an ARM port of x86 JonesForth 
+a compiler with an integrated command shell, where the user interacts via subroutine called words. \\
+PijForthos is a bare-metal operating system for Raspberry Pi based on Jonesforth-ARM. Jonesforth-ARM is an ARM port of x86 JonesForth 
 by Richard W.M. Jones, a Forth interpreter developed for ARM. If you have pijFORTHos on a Micro SD card in the Raspberry Pi, you can connect
 it to development machine using the USB to TTL serial UART adapter. Using the programs described below you can have access to 
 the Forth console.
@@ -355,7 +354,7 @@ The following command is used to set up the communication with the Raspberry Pi 
 \section{Software}
 
 \subsection{Environment setup}
-To setup the environment it is necessary to format the micro SD card using FAT32 as file system. Then the following files must be coped in the micro SD card: 
+To setup the environment it is necessary to format the micro SD card using FAT32 as file system. Then the following files must be copied in the micro SD card: 
 \begin{itemize}
     \item \texttt{bootcode.bin} contains the bootloader code 
     \item \texttt{config.txt} contains the configuration parameters
@@ -589,7 +588,7 @@ BSC1 CONSTANT CONTROL                   \ Control register address
 \subsubsection{lcd.f}
 
 \begin{verbatim}
-    HEX
+HEX
 
 02 CONSTANT FUNCTION_SET        \ Sets 4 bit mode
 01 CONSTANT CLEAR               \ Clear lcd 
