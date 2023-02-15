@@ -22,5 +22,5 @@ HEX
             CLEAR SEND_COMMAND
             DOOR CLOSED SEND_WORD SEND_WORD    \ Sends words to LCD
         THEN
-    0 UNTIL
+    AGAIN
 ;
