@@ -714,6 +714,7 @@ HEX
     CLEAR SEND_COMMAND          \ Sends clear command to LCD
     INITIALIZE_PERIPHERALS      
     GREEN_LED ON                \ Turns on the green LED
+    DOOR CLOSED SEND_WORD SEND_WORD    \ Sends words to LCD
     
     BEGIN  \If the hall sensor does not detect the magnet and the alarm is off
         HALL_SENSOR_STATUS 1 = BUZZER_STATUS 0 = AND IF   
